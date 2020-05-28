@@ -1,7 +1,7 @@
 # Личный проект «Кексобукинг» [![Build status][travis-image]][travis-url]
 
 * Студент: [Vitaliy Avdyeyev](https://up.htmlacademy.ru/javascript/20/user/1465455).
-* Наставник: `Неизвестно`.
+* Наставник: `Старчиков Павел`.
 
 ---
 
