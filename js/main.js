@@ -1,39 +1,62 @@
 'use strict';
 
+// массивы для случайной генерации в объектах объявления
 var LISTING_TYPE = ['palace', 'flat', 'house', 'bungalo'];
 var LISTING_CHECKIN_CHECKOUT = ['12:00', '13:00', '14:00'];
 var LISTING_FEATURES = ['wifi', 'dishwasher', 'parking', 'washer', 'elevator', 'conditioner'];
 var LISTING_PHOTOS = ['http://o0.github.io/assets/images/tokyo/hotel1.jpg', 'http://o0.github.io/assets/images/tokyo/hotel2.jpg', 'http://o0.github.io/assets/images/tokyo/hotel3.jpg'];
 
-var getRandomNumber = function (max) {
+var getRandomNumber = function (max) { // рандомизатор для объектов объявления
   return Math.floor(Math.random() * Math.floor(max));
 };
 
-var getRandomNumberRange = function (min, max) {
-  return Math.random() * (max - min) + min;
+var getRandomNumberRange = function (min, max) { // рандомизатор для объектов объявления
+  return Math.floor(Math.random() * (max - min) + min);
 };
 
-var imgSize = function () {
+var getImgSize = function () { // для получения ширины и высоты блока, где будут появляться метки, но сомнительно выглядит
   var myImg = document.querySelector('.map__pins');
   var currWidth = myImg.clientWidth;
   var currHeight = myImg.clientHeight;
+  return [currWidth, currHeight];
+};
 
-var listing = {
-  author: { // в ТЗ каждое свойство объекта обернуто в кавычки. их правильно указывать без кавычек, чтобы иметь возможность обращаться к свойствам объекта?
+var imgWidthHeight = getImgSize(); // получаем предельные размеры изображения по ширине и высоте
+var currWidth = imgWidthHeight[0];
+var currHeight = imgWidthHeight[1];
+
+var getRandomFeaturesArr = function (features) { // создает массив квартирных фич случайной длины, но насколько я понимаю здесь могут появляться повторяющиеся элементы
+  var featuresArr = new Array(getRandomNumberRange(2, 6));
+  for (var i = 0; i < featuresArr.length; i++) {
+    featuresArr[i] = features[getRandomNumber(features.length)];
+  }
+  return featuresArr;
+};
+
+var getRandomPhotosArr = function (photos) { // создает массив квартирных фотографий. также есть проблема повторов
+  var photosArr = new Array(getRandomNumberRange(1, 3));
+  for (var i = 0; i < photosArr.length; i++) {
+    photosArr[i] = photos[getRandomNumber(photos.length)];
+  }
+  return photosArr;
+};
+
+var listing = { // объект объявления
+  author: {
     avatar: 'img/avatars/user' + '0' + getRandomNumberRange(1, 9) + '.png', // адреса изображений не должны повторяться. не совсем понял как это осуществить. через массив?
   },
   offer: {
     title: 'Комфортное жилище на любой вкус', // здесь просто болванка?
-    address: 'getRandomNumberRange(0, currWidth)' + ', ' + 'getRandomNumberRange(0, currHeight)',
+    address: getRandomNumberRange(0, currWidth) + ', ' + getRandomNumberRange(0, currHeight),
     price: getRandomNumberRange(10, 200),
     type: LISTING_TYPE[getRandomNumber(LISTING_TYPE.length)],
     rooms: getRandomNumberRange(1, 5),
     guests: getRandomNumberRange(1, 9),
     checkin: LISTING_CHECKIN_CHECKOUT[getRandomNumber(LISTING_CHECKIN_CHECKOUT.length)],
     checkout: LISTING_CHECKIN_CHECKOUT[getRandomNumber(LISTING_CHECKIN_CHECKOUT.length)],
-    features: [LISTING_FEATURES[getRandomNumber(LISTING_FEATURES.length)], LISTING_FEATURES[getRandomNumber(LISTING_FEATURES.length)], LISTING_FEATURES[getRandomNumber(LISTING_FEATURES.length)]] // массив случайно длины пока не придумал как сделать
+    features: getRandomFeaturesArr(LISTING_FEATURES),
     description: 'Великолепное место для отдыха', // здесь тоже болванка?
-    photos: [LISTING_PHOTOS[getRandomNumber(LISTING_PHOTOS.length)], LISTING_PHOTOS[getRandomNumber(LISTING_PHOTOS.length)]] // массив случайно длины пока не придумал как сделать
+    photos: getRandomPhotosArr(LISTING_PHOTOS)
   },
   location: {
     x: getRandomNumberRange(1, currWidth),
@@ -41,7 +64,7 @@ var listing = {
   }
 };
 
-var getListings = function () {
+var getListings = function () { // собираем массив из 8 объектов. проблема в том, что он состоит из 8 одинаковых объектов
   var listings = [];
   for (var i = 0; i < 8; i++) {
     listings.push(listing);
@@ -49,9 +72,24 @@ var getListings = function () {
   return listings;
 };
 
+var listings = getListings();
+
 var mapState = document.querySelector('.map');
 mapState.classList.remove('.map--faded');
 
-// var card = mapState.querySelector('#card');
+var mapPins = document.querySelector('.map__pins');
+var pinTemplate = document.querySelector('#pin').content.querySelector('.map__pin'); // забираем темплейт пина
 
-var cardTemplate = document.querySelector('#card').content.querySelector('.map__card');
+var renderPin = function (param) {
+  var pinElement = pinTemplate.cloneNode(true);
+  pinElement.children[0].style = 'left:' + ' ' + param.location.x + 'px;' + ' ' + 'top:' + ' ' + param.location.y + 'px;';
+  pinElement.children[0].src = param.author.avatar;
+  pinElement.children[0].alt = param.offer.title;
+  return pinElement;
+};
+
+var pinsFragment = document.createDocumentFragment();
+for (var i = 0; i < listings.length; i++) {
+  pinsFragment.appendChild(renderPin(listings[i]));
+}
+mapPins.appendChild(pinsFragment); // не пойму почему их добавляется не 8, а 32
