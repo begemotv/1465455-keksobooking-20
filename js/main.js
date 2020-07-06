@@ -44,22 +44,25 @@ var getRandomPhotosArr = function (photos) { // создает массив кв
 var getListingsArr = function () {
   var arr = [];
   for (var i = 0; i < 8; i++) {
-    var avatar = 'img/avatars/user' + '0' + getRandomNumberRange(1, 9) + '.png',
-    title = 'Комфортное жилище на любой вкус',
-    address = getRandomNumberRange(0, currWidth) + ', ' + getRandomNumberRange(0, currHeight),
-    price = getRandomNumberRange(10, 200),
-    type = LISTING_TYPE[getRandomNumber(LISTING_TYPE.length)],
-    rooms = getRandomNumberRange(1, 5),
-    guests = getRandomNumberRange(1, 9),
-    checkin = LISTING_CHECKIN_CHECKOUT[getRandomNumber(LISTING_CHECKIN_CHECKOUT.length)],
-    checkout = LISTING_CHECKIN_CHECKOUT[getRandomNumber(LISTING_CHECKIN_CHECKOUT.length)],
-    features = getRandomFeaturesArr(LISTING_FEATURES),
-    description = 'Великолепное место для отдыха',
-    photos = getRandomPhotosArr(LISTING_PHOTOS),
-    x = getRandomNumberRange(1, currWidth) - 200, // не понял про смещение по X
-    y = getRandomNumberRange(130, 630) - 400; // не понял про смещение по Y
-
-    arr.push({author: {avatar}, offer: {title, address, price, type, rooms, guests, checkin, checkout, features, description, photos}, location: {x, y}});
+    arr.push({
+      author: {
+        avatar: 'img/avatars/user' + '0' + getRandomNumberRange(1, 9) + '.png'},
+      offer: {
+        title: 'Комфортное жилище на любой вкус',
+        address: getRandomNumberRange(0, currWidth) + ', ' + getRandomNumberRange(0, currHeight),
+        price: getRandomNumberRange(10, 200),
+        type: LISTING_TYPE[getRandomNumber(LISTING_TYPE.length)],
+        rooms: getRandomNumberRange(1, 5),
+        guests: getRandomNumberRange(1, 9),
+        checkin: LISTING_CHECKIN_CHECKOUT[getRandomNumber(LISTING_CHECKIN_CHECKOUT.length)],
+        checkout: LISTING_CHECKIN_CHECKOUT[getRandomNumber(LISTING_CHECKIN_CHECKOUT.length)],
+        features: getRandomFeaturesArr(LISTING_FEATURES),
+        description: 'Великолепное место для отдыха',
+        photos: getRandomPhotosArr(LISTING_PHOTOS)}, // - массив строк случайной длины. В поле объекта фото копировать оригинальный массив и с shift или другими методами. Скопировать чтобы мы не перетерли оригинальный массив
+      location: {
+        x: getRandomNumberRange(1, currWidth),
+        y: getRandomNumberRange(130, 630)}
+    });
   }
   return arr;
 };
@@ -75,7 +78,7 @@ var pinTemplate = document.querySelector('#pin').content.querySelector('.map__pi
 
 var renderPin = function (param) {
   var pinElement = pinTemplate.cloneNode(true);
-  pinElement.children[0].style = 'left:' + ' ' + param.location.x + 'px;' + ' ' + 'top:' + ' ' + param.location.y + 'px;';
+  pinElement.style = 'left:' + param.location.x + 'px;' + 'top:' + ' ' + param.location.y + 'px;'; // какое смещение?
   pinElement.children[0].src = param.author.avatar;
   pinElement.children[0].alt = param.offer.title;
   return pinElement;
@@ -85,5 +88,5 @@ var pinsFragment = document.createDocumentFragment();
 for (var i = 0; i < listings.length; i++) {
   pinsFragment.appendChild(renderPin(listings[i]));
 }
-mapPins.appendChild(pinsFragment); // не пойму почему их добавляется не 8, а 32
+mapPins.appendChild(pinsFragment);
 console.log(mapPins);
