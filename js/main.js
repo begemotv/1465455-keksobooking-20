@@ -15,7 +15,7 @@ var getRandomNumberRange = function (min, max) { // рандомизатор д�
 };
 
 var getImgSize = function () { // для получения ширины и высоты блока, где будут появляться метки, но сомнительно выглядит
-  var myImg = document.querySelector('.map__pins');
+  var myImg = document.querySelector('.map--faded');
   var currWidth = myImg.clientWidth;
   var currHeight = myImg.clientHeight;
   return [currWidth, currHeight];
@@ -46,7 +46,8 @@ var getListingsArr = function () {
   for (var i = 0; i < 8; i++) {
     arr.push({
       author: {
-        avatar: 'img/avatars/user' + '0' + getRandomNumberRange(1, 9) + '.png'},
+        avatar: 'img/avatars/user' + '0' + getRandomNumberRange(1, 8) + '.png'
+      },
       offer: {
         title: 'Комфортное жилище на любой вкус',
         address: getRandomNumberRange(0, currWidth) + ', ' + getRandomNumberRange(0, currHeight),
@@ -58,17 +59,19 @@ var getListingsArr = function () {
         checkout: LISTING_CHECKIN_CHECKOUT[getRandomNumber(LISTING_CHECKIN_CHECKOUT.length)],
         features: getRandomFeaturesArr(LISTING_FEATURES),
         description: 'Великолепное место для отдыха',
-        photos: getRandomPhotosArr(LISTING_PHOTOS)}, // - массив строк случайной длины. В поле объекта фото копировать оригинальный массив и с shift или другими методами. Скопировать чтобы мы не перетерли оригинальный массив
+        photos: getRandomPhotosArr(LISTING_PHOTOS)
+      }, // - массив строк случайной длины. В поле объекта фото копировать оригинальный массив и с shift или другими методами. Скопировать чтобы мы не перетерли оригинальный массив
       location: {
         x: getRandomNumberRange(1, currWidth),
-        y: getRandomNumberRange(130, 630)}
+        y: getRandomNumberRange(130, 630)
+      }
     });
   }
   return arr;
 };
 
 var listings = getListingsArr();
-console.log(listings);
+
 
 var mapState = document.querySelector('.map');
 mapState.classList.remove('.map--faded');
@@ -89,4 +92,4 @@ for (var i = 0; i < listings.length; i++) {
   pinsFragment.appendChild(renderPin(listings[i]));
 }
 mapPins.appendChild(pinsFragment);
-console.log(mapPins);
+
