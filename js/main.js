@@ -78,7 +78,7 @@ mapState.classList.remove('.map--faded');
 
 var mapPins = document.querySelector('.map__pins');
 var pinTemplate = document.querySelector('#pin').content.querySelector('.map__pin'); // забираем темплейт пина
-
+console.log(pinTemplate);
 
 var renderPin = function (param) {
   var pinElement = pinTemplate.cloneNode(true);
@@ -97,8 +97,8 @@ mapPins.appendChild(pinsFragment);
 //
 
 var cardTemplate = document.querySelector('#card').content.querySelector('.map__card'); // сохраняем темплейт карточки
-var mapFiltersContainer = document.querySelector('.map__filters-container'); // находим перед чем будем их вставлять
-var mapElement = document.querySelector('.map'); // находим родительский элемент для вставки
+var mapFiltersContainer = document.querySelector('.map__filters-container'); //находим перед чем будем их вставлять
+var mapElement = document.querySelector('.map') // находим родительский элемент для вставки
 
 var renderCard = function (param) {
   var cardElement = cardTemplate.cloneNode(true);
@@ -116,7 +116,7 @@ var renderCard = function (param) {
 
   offerTitle.textContent = param.offer.title;
   offerAddress.textContent = param.offer.address;
-  offerPrice.textContent = param.offer.price + '₽/ночь';
+  offerPrice.textContent = param.offer.price + "₽/ночь";
   if (param.offer.type === 'palace') {
     offerType = 'Дворец';
   } else if (param.offer.type === 'flat') {
@@ -131,18 +131,30 @@ var renderCard = function (param) {
   offerFeatures = param.offer.features.toString();
   offerDescription = param.offer.description;
   offerPhotosCollection.removeChild(offerPhoto);
-  for (var k = 0; k < param.offer.photos.length; k++) {
+  for (var i = 0; i < param.offer.photos.length; i++) {
     var cardPhoto = offerPhoto.cloneNode(true);
-    cardPhoto.src = param.offer.photos[k];
+    cardPhoto.src = param.offer.photos[i];
     offerPhotosCollection.appendChild(cardPhoto);
   }
   offerAuthorAvatar.src = param.author.avatar;
 
+  console.log(offerTitle.textContent);
+  console.log(offerAddress.textContent);
+  console.log(offerPrice.textContent);
+  console.log(offerType);
+  console.log(offerRoomsGuests);
+  console.log(offerCheckInOut);
+  console.log(offerFeatures);
+  console.log(offerDescription);
+  console.log(offerPhotosCollection.children[0]);
+  console.log(offerAuthorAvatar)
   return cardElement;
 };
 
 var cardsFragment = document.createDocumentFragment();
-for (var j = 0; j < listings.length; j++) {
+for (var i = 0; i < listings.length; i++) {
   cardsFragment.appendChild(renderCard(listings[i]));
 }
 mapElement.insertBefore(cardsFragment, mapFiltersContainer);
+
+//, 'flat', 'house', 'bungalo'
