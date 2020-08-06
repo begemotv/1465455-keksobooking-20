@@ -1,7 +1,6 @@
 /* eslint-disable semi */
 'use strict';
 
-// массивы для случайной генерации в объектах объявления
 var LISTING_TYPE = [
   'palace',
   'flat',
@@ -63,8 +62,6 @@ var formTimein = adFormElement.querySelector('#timein');
 var formTimeout = adFormElement.querySelector('#timeout');
 var formRoomNumber = adFormElement.querySelector('#room_number');
 var formCapacity = adFormElement.querySelector('#capacity');
-// var formImages = adFormElement.querySelector('#images');
-// var formSubmit = adFormElement.querySelector('.ad-form__element--submit');
 
 var getRandomNumber = function (max) { // рандомизатор для объектов объявления
   return Math.round(Math.random() * max);
@@ -105,11 +102,8 @@ var getListingsArr = function () {
   return arr;
 };
 
-var listings = getListingsArr();
-
-var pinTemplate = document.querySelector('#pin').content.querySelector('.map__pin'); // забираем темплейт пина
-
-var renderPin = function (param) {
+var renderPin = function (param) { // рендерим 1 пин
+  var pinTemplate = document.querySelector('#pin').content.querySelector('.map__pin'); // забираем темплейт пина
   var pinElement = pinTemplate.cloneNode(true);
   pinElement.alt = param.offer.title;
   pinElement.style = 'left:' + param.location.x + 'px;' + 'top:' + ' ' + param.location.y + 'px;'; // какое смещение?
@@ -119,7 +113,9 @@ var renderPin = function (param) {
   return pinElement;
 };
 
-var addPinsToFragment = function (arr) {
+var listings = getListingsArr();
+
+var addPinsToFragment = function (arr) { // собираем пины по количеству объектов в массиве объявлений и добавляем их в фрагмент
   var fragment = document.createDocumentFragment();
   for (var i = 0; i < listings.length; i++) {
     fragment.appendChild(renderPin(listings[i]));
@@ -127,13 +123,11 @@ var addPinsToFragment = function (arr) {
   return fragment;
 }
 
-var renderPinsToDom = function (container, fragment) {
+var renderPinsToDom = function (container, fragment) { // помещаем фрагмент с пинами в ДОМ (container - блок где они в разметке)
   container.append(fragment);
 }
 
-var cardTemplate = document.querySelector('#card').content.querySelector('.map__card');
-
-var renderOfferFeatures = function (arrOfferFeatures, cardElement) {
+var renderOfferFeatures = function (arrOfferFeatures, cardElement) { // *** добавляем фичи карточкам на основе объекта массива listings
   var featuresElement = cardElement.querySelector('.popup__features');
   var featureElement;
 
@@ -147,8 +141,9 @@ var renderOfferFeatures = function (arrOfferFeatures, cardElement) {
   }
 };
 
-var renderCard = function (param) {
+var renderCard = function (param) { // рендер карточки объявления
   var fragment = document.createDocumentFragment();
+  var cardTemplate = document.querySelector('#card').content.querySelector('.map__card');
   var cardElement = cardTemplate.cloneNode(true);
   var offerAuthorAvatar = cardElement.querySelector('.popup__avatar');
   var offerTitle = cardElement.querySelector('.popup__title');
@@ -166,13 +161,13 @@ var renderCard = function (param) {
   offerTitle.textContent = param.offer.title;
   offerAddress.textContent = param.offer.address;
   offerPrice.textContent = param.offer.price + '₽/ночь';
-  offerType.textContent = LISTING_TYPE_RUS[LISTING_TYPE.indexOf(param.offer.type)];
+  offerType.textContent = LISTING_TYPE_RUS[LISTING_TYPE.indexOf(param.offer.type)]; // смотрим какой тип в Listings, сравниваем значения со значениями в LISTING_TYPE, определяем его индекс и по этому индексу находим русское значение
   offerRoomsGuests.textContent = param.offer.rooms + ' комнаты для ' + param.offer.guests + ' гостей';
   offerCheckInOut.textContent = 'Заезд после ' + param.offer.checkin + ', выезд до ' + param.offer.checkout;
-  renderOfferFeatures(param.offer.features, cardElement);
+  renderOfferFeatures(param.offer.features, cardElement); // передаем что и куда
   offerDescription.textContent = param.offer.description;
 
-  offerPhotosCollection.removeChild(offerPhoto);
+  offerPhotosCollection.removeChild(offerPhoto); // удаляем образец, потом циклом добавляем количество фото в listings
   for (var i = 0; i < param.offer.photos.length; i++) {
     var cardPhoto = offerPhoto.cloneNode(true);
     cardPhoto.src = param.offer.photos[i];
@@ -187,18 +182,17 @@ var renderCard = function (param) {
 };
 
 formAddress.value = Math.round(mapPinMain.offsetLeft - (PIN_WIDTH / 2)) +
-  ', ' + Math.round(mapPinMain.offsetTop - (PIN_WIDTH / 2));
+  ', ' + Math.round(mapPinMain.offsetTop - (PIN_WIDTH / 2)); // координаты даже в неактивном состоянии
 
-var setActiveState = function () {
-  listings = getListingsArr();
-  var pinsFragment = addPinsToFragment(listings);
-  renderPinsToDom(mapPins, pinsFragment);
+var setActiveState = function () { // перевести в активное состояние
+  var pinsFragment = addPinsToFragment(listings); // собрали фрагмент пинов
+  renderPinsToDom(mapPins, pinsFragment); // рендерим пины в ДОМ
   mapElement.classList.remove('map--faded');
   adFormElement.classList.remove('ad-form--disabled');
   mapFilters.classList.remove('ad-form--disabled');
-  changeStateOfControls(formFieldsets, false);
+  changeStateOfControls(formFieldsets, false); // ставим в атрибуты полей disabled=false
   changeStateOfControls(formSelects, false);
-  setTitleInputValidity(true, MIN_TITLE_LENGTH, MAX_TITLE_LENGTH);
+  setTitleInputValidity(true, MIN_TITLE_LENGTH, MAX_TITLE_LENGTH); // передаем значения в проверку валидности названия объявления
   setPriceInputValidity(true, MAX_PRICE, 'number');
   mapPins.addEventListener('click', mapPinClickHandler);
   formCapacity.addEventListener('input', compareRoomsGuestsHandler);
@@ -221,7 +215,7 @@ var setNotActiveState = function () {
   mapPinMain.addEventListener('mousedown', mapActivationHandler);
 };
 
-var mapPinClickHandler = function (evt) {
+var mapPinClickHandler = function (evt) { // ***
   var currentPin = evt.target.closest('.map__pin:not(.map__pin--main)');
 
   if (currentPin !== null || evt.keyCode === ENT_KEY) {
@@ -234,7 +228,7 @@ var mapPinClickHandler = function (evt) {
   }
 };
 
-var advertCardCloseHandler = function (evt) {
+var advertCardCloseHandler = function (evt) { // обработчик на нажатие по кнопке Close карточки. удаляет ее из ДОМа
   if (evt.keyCode === ESC_KEY || evt.button === MOUSE_LEFT_BUTTON || evt.keyCode === ENT_KEY) {
     mapElement.querySelector('.map__card').remove();
   }
