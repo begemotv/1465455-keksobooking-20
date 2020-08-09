@@ -240,6 +240,7 @@ var mapActivationHandler = function (evt) {
   }
   mapPinMain.removeEventListener('keydown', mapActivationHandler);
   mapPinMain.removeEventListener('mousedown', mapActivationHandler);
+  console.log(evt);
 };
 
 var setTitleInputValidity = function (isRequired, minLength, maxLength) {
